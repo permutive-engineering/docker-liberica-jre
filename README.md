@@ -27,7 +27,7 @@ In addition to the major versions, minor versions of each JDK (shipped as a JRE)
 - [JRE 11](https://api.bell-sw.com/v1/liberica/releases?version-feature=11&bitness=64&os=linux&arch=x86&package-type=tar.gz&bundle-type=jre)
 
 For a full all available image versions see the
-[Github Packages listing for this repo](https://github.com/permutive-engineering/docker-liberica-jre/pkgs/container/permutive-jre-liberica).
+[Github Packages listing for this repo](https://github.com/permutive-engineering/docker-liberica-jre/pkgs/container/permutive-jre-liberica/versions).
 
 ## Why Does Permutive Maintain their Own Java Images?
 
