@@ -7,6 +7,8 @@ on:
   schedule:
     # every day 1pm (UTC)
     - cron: '0 13 * * *'
+  workflow_dispatch:
+    description: "Allows manual trigger via GitHub"
 
 jobs:
   build:
