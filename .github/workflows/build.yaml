@@ -19,6 +19,7 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Docker Build Cache
+        id: cache
         uses: actions/cache@v2
         with:
           path: /tmp/docker-builds
@@ -42,7 +43,7 @@ jobs:
           cp -r /tmp/docker-builds .tmp/docker-builds.post
 
       - name: Update cache invalidator
-        if: ${{ hashFiles('**/.tmp/docker-builds.pre/*') != hashFiles('**/.tmp/docker-builds.post/*') }}
+        if: ${{ hashFiles('**/.tmp/docker-builds.pre/*') != hashFiles('**/.tmp/docker-builds.post/*') && steps.cache.outputs.cache-hit == 'true'}}
         run: |
           dd if=/dev/urandom of=.github/.cache_invalidator bs=1K count=1
 
