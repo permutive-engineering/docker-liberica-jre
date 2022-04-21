@@ -20,17 +20,38 @@ jobs:
         uses: actions/cache@v2
         with:
           path: /tmp/docker-builds
-          key: ${{ runner.os }}-${{ hashFiles('**/docker/build.sh') }}-${{ hashFiles('**/docker/liberica-base/Dockerfile') }}-${{ hashFiles('**/docker/liberica-jre/Dockerfile') }}-${{ hashFiles('**/.github/workflows/build.yaml') }}
+          key: ${{ runner.os }}-${{ hashFiles('**/docker/build.sh') }}-${{ hashFiles('**/docker/liberica-base/Dockerfile') }}-${{ hashFiles('**/docker/liberica-jre/Dockerfile') }}-${{ hashFiles('**/.github/workflows/build.yaml') }}-${{ hashFiles('**/.github/.cache_invalidator') }}
 
       - name: Log into registry
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
       - name: Build docker images
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
-            docker/build.sh push
-          else
-            docker/build.sh
-          fi
+          mkdir -p /tmp/docker-builds
+          mkdir .tmp
+          cp -r /tmp/docker-builds .tmp/docker-builds.pre
+
+          #if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
+          #  docker/build.sh push
+          #else
+          #  docker/build.sh
+          #fi
+
+          dd if=/dev/urandom of=/tmp/docker-builds/test bs=1K count=1
+
+          cp -r /tmp/docker-builds .tmp/docker-builds.post
+
+      - name: Update cache invalidator
+        if: ${{ hashFiles('**/.tmp/docker-builds.pre/*') != hashFiles('**/.tmp/docker-builds.post/*') }}
+        run: |
+          dd if=/dev/urandom of=.github/.cache_invalidator bs=1K count=1
+
+          echo "[user]
+            name = GitHub Actions
+            email = ci@permutive.com" >> "${HOME}/.gitconfig"
+
+          git fetch origin
+          git checkout ${{ github.head_ref || github.ref_name }}
+          git add .github/.cache_invalidator
+          git commit -m "Update cache invalidator"
+          git push
