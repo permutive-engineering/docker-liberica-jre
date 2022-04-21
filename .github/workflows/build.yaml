@@ -31,13 +31,11 @@ jobs:
           mkdir .tmp
           cp -r /tmp/docker-builds .tmp/docker-builds.pre
 
-          #if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
-          #  docker/build.sh push
-          #else
-          #  docker/build.sh
-          #fi
-
-          dd if=/dev/urandom of=/tmp/docker-builds/test bs=1K count=1
+          if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
+            docker/build.sh push
+          else
+            docker/build.sh
+          fi
 
           cp -r /tmp/docker-builds .tmp/docker-builds.post
 
