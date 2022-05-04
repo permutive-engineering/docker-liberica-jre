@@ -69,4 +69,6 @@ RUN ln -s ${GLIBC_PREFIX}/lib/ld-*.so* /lib \
   &&    for pkg in $OPT_PKGS ; do apk --no-cache add $pkg ; done \
   &&    ${GLIBC_PREFIX}/sbin/ldconfig \
   &&    echo 'hosts: files mdns4_minimal [NOTFOUND=return] dns mdns4' > /etc/nsswitch.conf \
-  &&    apk add --no-cache jattach --repository http://dl-cdn.alpinelinux.org/alpine/edge/community/
+  &&    apk add --no-cache jattach --repository http://dl-cdn.alpinelinux.org/alpine/edge/community/ \
+  &&    chmod a-x $(which jattach) \
+  &&    apk add --no-cache tini
