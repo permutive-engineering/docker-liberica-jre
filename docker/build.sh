@@ -28,7 +28,7 @@ fi
 
 
 export BASE_IMAGE_NAME="$REMOTE_REPO/permutive-liberica-base"
-export IMAGE_NAME="$REMOTE_REPO/permutive-jre-liberica-experimental"
+export IMAGE_NAME="$REMOTE_REPO/permutive-jre-liberica"
 if [[ $PUSH == "push" ]]; then
   export PUSHARG="--push"
 else

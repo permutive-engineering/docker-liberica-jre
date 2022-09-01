@@ -36,9 +36,11 @@ docker push ghcr.io/permutive-engineering/permutive-glibc:<amd64|arm64>
 
 This final step will create a manifest that includes both images.
 
-First, create a new `buildx` instance if it doesn't already exist on your system:
+First, create a new `buildx` instance. If one already exists on your system, the first command below
+will ensure it gets removed.
 
 ```bash
+docker buildx rm glibc
 docker buildx create --name glibc
 docker buildx use glibc
 docker buildx inspect --bootstrap
@@ -49,9 +51,10 @@ specific images:
 
 ```bash
 docker buildx imagetools create -t ghcr.io/permutive-engineering/permutive-glibc:latest ghcr.io/permutive-engineering/permutive-glibc:amd64 ghcr.io/permutive-engineering/permutive-glibc:arm64
-docker push ghcr.io/permutive-engineering/permutive-glibc:latest
 ```
 
 ## Start using the new image
 
-To force a new build, update [the cache invalidator located at `.github/.cache_invalidator` in this repo](../.github/.cache_invalidator) with a new value.
+To force a new build, update
+[the cache invalidator located at `.github/.cache_invalidator` in this repo](../.github/.cache_invalidator)
+with a new value.
