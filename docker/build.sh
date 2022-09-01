@@ -1,5 +1,5 @@
 #!/bin/bash
-set -e
+set -e pipefail
 
 ALPINE_IMAGE="alpine:3.15"
 export PUSH=$1
