@@ -1,8 +1,7 @@
 #!/bin/bash
-set -e pipefail
+set -e 
 
 ALPINE_IMAGE="alpine:3.15"
-export PUSH=$1
 export REMOTE_REPO=ghcr.io/permutive-engineering
 JRES="11 17"
 
@@ -29,10 +28,9 @@ fi
 
 export BASE_IMAGE_NAME="$REMOTE_REPO/permutive-liberica-base"
 export IMAGE_NAME="$REMOTE_REPO/permutive-jre-liberica"
-if [[ $PUSH == "push" ]]; then
+export PUSHARG=""
+if [[ "$1" == "push" ]]; then
   export PUSHARG="--push"
-else
-  export PUSHARG=""
 fi
 
 
@@ -46,6 +44,7 @@ docker buildx inspect --bootstrap
 pushd $(dirname "$0")
 
 if [[ "$BUILD_BASE" == "true" ]]; then
+  echo Building Base Image
   pushd liberica-base
 
   docker buildx build --platform linux/amd64,linux/arm64 -t $BASE_IMAGE_NAME $PUSHARG .
@@ -77,6 +76,8 @@ function build_jre {
             BUILD_IMAGE=false
           fi
       fi
+#TODO REMOVE
+      BUILD_IMAGE=true
 
 
       if [[ "$BUILD_IMAGE" == "true" ]];then
@@ -89,7 +90,7 @@ function build_jre {
         fi
         echo $TAGS
 
-        docker buildx build --platform linux/amd64,linux/arm64 --build-arg LIBERICA_PKG_URL_ARM=$armDownloadUrl --build-arg LIBERICA_PKG_URL_X86=$x86DownloadUrl --build-arg LIBERICA_SHA1_ARM=$armSha1 --build-arg LIBERICA_SHA1_X86=$x86Sha1 $TAGS $PUSHARG .
+        docker buildx build --platform linux/arm64 --build-arg LIBERICA_PKG_URL_ARM=$armDownloadUrl --build-arg LIBERICA_PKG_URL_X86=$x86DownloadUrl --build-arg LIBERICA_SHA1_ARM=$armSha1 --build-arg LIBERICA_SHA1_X86=$x86Sha1 $TAGS $PUSHARG .
 
         echo "$armSha1$x86Sha1" > $CACHED_SHA_FILE
       fi

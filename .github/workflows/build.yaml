@@ -35,8 +35,10 @@ jobs:
           cp -r /tmp/docker-builds .tmp/docker-builds.pre
 
           if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
+            echo "Building and pushing Docker images"
             docker/build.sh push
           else
+            echo "Building Docker images"
             docker/build.sh
           fi
 
