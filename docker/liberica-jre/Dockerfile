@@ -4,12 +4,28 @@ FROM ghcr.io/permutive-engineering/permutive-liberica-base
 
 ARG LIBERICA_VERSION=""
 ARG LIBERICA_VARIANT=jre
-ARG LIBERICA_SHA1=""
+ARG LIBERICA_SHA1_ARM=""
+ARG LIBERICA_SHA1_X86=""
 ARG LIBERICA_ROOT=/usr/lib/jvm/${LIBERICA_VARIANT}-${LIBERICA_VERSION}-bellsoft
-ARG LIBERICA_PKG_URL=""
+ARG LIBERICA_PKG_URL_ARM=""
+ARG LIBERICA_PKG_URL_X86=""
 
 
-RUN mkdir -p $LIBERICA_ROOT \
+RUN case `uname -m` in \
+              x86_64) \
+                  LIBERICA_PKG_URL=$LIBERICA_PKG_URL_X86 \
+                  LIBERICA_SHA1=$LIBERICA_SHA1_X86 \
+                  ;; \
+              aarch64) \
+                  LIBERICA_PKG_URL=$LIBERICA_PKG_URL_ARM \
+                  LIBERICA_SHA1=$LIBERICA_SHA1_ARM \
+                  ;; \
+              *) \
+            LIBERICA_PKG_URL="" \
+            LIBERICA_SHA1="" \
+            ;; \
+        esac \
+  &&    mkdir -p $LIBERICA_ROOT \
   &&    mkdir -p /tmp/java \
   &&    RSUFFIX="" \
   &&    wget "${LIBERICA_PKG_URL}" -O /tmp/java/jre.tar.gz \
