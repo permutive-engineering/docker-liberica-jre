@@ -90,7 +90,7 @@ function build_jre {
         fi
         echo $TAGS
 
-        docker buildx build --platform linux/arm64 --build-arg LIBERICA_PKG_URL_ARM=$armDownloadUrl --build-arg LIBERICA_PKG_URL_X86=$x86DownloadUrl --build-arg LIBERICA_SHA1_ARM=$armSha1 --build-arg LIBERICA_SHA1_X86=$x86Sha1 $TAGS $PUSHARG .
+        docker buildx build --platform linux/amd64,linux/arm64 --build-arg LIBERICA_PKG_URL_ARM=$armDownloadUrl --build-arg LIBERICA_PKG_URL_X86=$x86DownloadUrl --build-arg LIBERICA_SHA1_ARM=$armSha1 --build-arg LIBERICA_SHA1_X86=$x86Sha1 $TAGS $PUSHARG .
 
         echo "$armSha1$x86Sha1" > $CACHED_SHA_FILE
       fi
