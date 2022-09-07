@@ -76,9 +76,6 @@ function build_jre {
             BUILD_IMAGE=false
           fi
       fi
-#TODO REMOVE
-      BUILD_IMAGE=true
-
 
       if [[ "$BUILD_IMAGE" == "true" ]];then
         TAGS="-t $IMAGE_NAME:$SANITISED_VERSION_BUILD -t $IMAGE_NAME:$SANITISED_VERSION"
