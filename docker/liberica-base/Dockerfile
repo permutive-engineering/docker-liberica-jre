@@ -38,7 +38,7 @@ RUN ln -s /lib /lib64 \
   &&   PLATFORM=$([ `uname -m` = "x86_64" ] && echo "x64" || echo "arm64") \
   &&   ASYNC_PROFILER_URL="https://github.com/jvm-profiling-tools/async-profiler/releases/download/v2.8.3/async-profiler-2.8.3-linux-$PLATFORM.tar.gz" \
   &&   echo "Downloading $ASYNC_PROFILER_URL" \
-  &&   apk add --no-cache curl && curl $ASYNC_PROFILER_URL -o /tmp/async-profiler.tgz  && apk del curl \
+  &&   apk add --no-cache curl && curl $ASYNC_PROFILER_URL -o /tmp/async-profiler.tgz -L -s  && apk del curl \
   &&   tar xf /tmp/async-profiler.tgz -C /opt \
   &&   rm /tmp/async-profiler.tgz \
   &&   mv opt/async-profiler* /opt/async-profiler
