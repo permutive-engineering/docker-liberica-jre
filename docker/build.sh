@@ -47,9 +47,10 @@ if [[ "$BUILD_BASE" == "true" ]]; then
   echo Building Base Image
   pushd liberica-base
 
-  docker buildx build --platform linux/amd64,linux/arm64 -t $BASE_IMAGE_NAME $PUSHARG .
+  docker build  -t $BASE_IMAGE_NAME $PUSHARG .
 
   echo $BASE_SHA > $BASE_SHA_FILE
+  exit 0
   popd
 fi
 
@@ -87,7 +88,7 @@ function build_jre {
         fi
         echo $TAGS
 
-        docker buildx build --platform linux/amd64,linux/arm64 --build-arg LIBERICA_PKG_URL_ARM=$armDownloadUrl --build-arg LIBERICA_PKG_URL_X86=$x86DownloadUrl --build-arg LIBERICA_SHA1_ARM=$armSha1 --build-arg LIBERICA_SHA1_X86=$x86Sha1 $TAGS $PUSHARG .
+        docker build --build-arg LIBERICA_PKG_URL_ARM=$armDownloadUrl --build-arg LIBERICA_PKG_URL_X86=$x86DownloadUrl --build-arg LIBERICA_SHA1_ARM=$armSha1 --build-arg LIBERICA_SHA1_X86=$x86Sha1 $TAGS $PUSHARG .
 
         echo "$armSha1$x86Sha1" > $CACHED_SHA_FILE
       fi
@@ -98,6 +99,7 @@ export SHELL=$(type -p bash)
 export -f build_jre
 
 for JRE in $JRES; do
+  echo "Building JRE"
   # Use the Liberica API to get all of the releases for the major version
   curl "https://api.bell-sw.com/v1/liberica/releases?version-feature=$JRE&bitness=64&os=linux&arch=x86&arch=arm&package-type=tar.gz&bundle-type=jre" 2> /dev/null | jq -r 'group_by(.version)[] | [sort_by(.architecture)[]] | [.[0].downloadUrl, .[0].sha1, .[1].downloadUrl, .[1].sha1, .[0].version, .[0].latest, .[0].latestInFeatureVersion] | @tsv' | parallel -j 4 "build_jre $JRE $BUILD_BASE {}"
 done
