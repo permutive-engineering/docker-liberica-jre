@@ -4,7 +4,7 @@
 FROM ghcr.io/permutive-engineering/permutive-glibc as glibc-base
 
 # Second stage copies the various dynamic libaries into place, ignoring extra the majority of gcc and zlib binaries
-FROM alpine:3.15 as glibc-extras
+FROM alpine:3.17 as glibc-extras
 
 ARG GLIBC_PREFIX=/usr/glibc
 
@@ -16,7 +16,7 @@ RUN   cp -dP /tmp/zlib/usr/lib/libz.so* "${GLIBC_PREFIX}/lib" \
   &&  cp -dP /tmp/gcc/usr/lib/libgcc* /tmp/gcc/usr/lib/libstdc++* "${GLIBC_PREFIX}/lib"
 
 # Final stage ensures the extra gcc and zlib binaries aren't included in the final image
-FROM alpine:3.15
+FROM alpine:3.17
 
 ARG GLIBC_PREFIX=/usr/glibc
 ARG LANG=en_US.UTF-8
