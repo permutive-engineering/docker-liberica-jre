@@ -33,6 +33,7 @@ RUN ln -s /lib /lib64 \
   &&   for pkg in $OPT_PKGS ; do apk --no-cache add $pkg ; done \
   &&   ${GLIBC_PREFIX}/sbin/ldconfig \
   &&   echo 'hosts: files mdns4_minimal [NOTFOUND=return] dns mdns4' > /etc/nsswitch.conf \
+  &&   apk upgrade --update --no-cache libcrypto3 libssl3 \
   &&   apk add --no-cache jattach --repository http://dl-cdn.alpinelinux.org/alpine/edge/community/ \
   &&   apk add --no-cache tini libstdc++ \
   &&   PLATFORM=$([ `uname -m` = "x86_64" ] && echo "x64" || echo "arm64") \
