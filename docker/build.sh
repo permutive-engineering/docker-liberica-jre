@@ -3,7 +3,7 @@ set -e
 
 ALPINE_IMAGE="alpine:3.17"
 export REMOTE_REPO=ghcr.io/permutive-engineering
-JRES="11 17"
+JRES="11 17 21"
 
 # Re-tag alpine for use in the JRE base image
 docker pull $ALPINE_IMAGE
