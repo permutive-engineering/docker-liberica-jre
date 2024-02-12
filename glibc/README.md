@@ -47,10 +47,11 @@ docker buildx inspect --bootstrap
 ```
 
 Then use the `imagetools` command to create and push a new maifest that contains each of the architecture
-specific images:
+specific images. Ensure you set the version of glibc in the version and update the version being pulled
+in the `liberica-base` image.
 
 ```bash
-docker buildx imagetools create -t ghcr.io/permutive-engineering/permutive-glibc:latest ghcr.io/permutive-engineering/permutive-glibc:amd64 ghcr.io/permutive-engineering/permutive-glibc:arm64
+docker buildx imagetools create -t ghcr.io/permutive-engineering/permutive-glibc:<GLIBC VERSION> ghcr.io/permutive-engineering/permutive-glibc:amd64 ghcr.io/permutive-engineering/permutive-glibc:arm64
 ```
 
 ## Start using the new image

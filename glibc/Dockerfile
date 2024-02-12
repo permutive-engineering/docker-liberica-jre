@@ -2,13 +2,13 @@
 
 FROM debian:11-slim 
 
-ARG GLIBC_VERSION=2.34
+ARG GLIBC_VERSION=2.39
 ARG GLIBC_PREFIX=/usr/glibc
 ARG LANG=en_US.UTF-8
-ARG EXT_GCC_LIBS_URL_X86=https://archive.archlinux.org/packages/g/gcc-libs/gcc-libs-11.1.0-3-x86_64.pkg.tar.zst
-ARG EXT_ZLIB_URL_X86=https://archive.archlinux.org/packages/z/zlib/zlib-1%3A1.2.11-5-x86_64.pkg.tar.zst
-ARG EXT_GCC_LIBS_URL_ARM=https://alaa.ad24.cz/packages/g/gcc-libs/gcc-libs-11.2.0-3-aarch64.pkg.tar.xz
-ARG EXT_ZLIB_URL_ARM=https://alaa.ad24.cz/packages/z/zlib/zlib-1%3A1.2.11-5-aarch64.pkg.tar.xz
+ARG EXT_GCC_LIBS_URL_X86=https://archive.archlinux.org/packages/g/gcc-libs/gcc-libs-13.2.1-5-x86_64.pkg.tar.zst
+ARG EXT_ZLIB_URL_X86=https://archive.archlinux.org/packages/z/zlib/zlib-1%3A1.2.13-3-x86_64.pkg.tar.zst
+ARG EXT_GCC_LIBS_URL_ARM=https://alaa.ad24.cz/packages/g/gcc-libs/gcc-libs-12.1.0-2.1-aarch64.pkg.tar.xz
+ARG EXT_ZLIB_URL_ARM=https://alaa.ad24.cz/packages/z/zlib/zlib-1%3A1.3.1-1-aarch64.pkg.tar.xz
 
 RUN apt-get update && apt-get install -y \
   curl build-essential gawk bison python3 texinfo gettext wget zstd
