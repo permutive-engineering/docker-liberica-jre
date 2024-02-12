@@ -1,7 +1,7 @@
 # Adapted from https://github.com/bell-sw/Liberica/blob/master/docker/repos/liberica-openjre-alpine/17/Dockerfile
 
 # First stage does nothing other than reference the glibc base image
-FROM ghcr.io/permutive-engineering/permutive-glibc as glibc-base
+FROM ghcr.io/permutive-engineering/permutive-glibc:2.39 as glibc-base
 
 # Second stage copies the various dynamic libaries into place, ignoring extra the majority of gcc and zlib binaries
 FROM alpine:3.18 as glibc-extras
