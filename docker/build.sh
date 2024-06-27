@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e 
 
-ALPINE_IMAGE="alpine:3.17"
+ALPINE_IMAGE="alpine:3.18"
 export REMOTE_REPO=ghcr.io/permutive-engineering
 JRES="11 17 21"
 
