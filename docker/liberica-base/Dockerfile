@@ -4,7 +4,7 @@
 FROM ghcr.io/permutive-engineering/permutive-glibc as glibc-base
 
 # Second stage copies the various dynamic libaries into place, ignoring extra the majority of gcc and zlib binaries
-FROM alpine:3.18 as glibc-extras
+FROM alpine:3.24 as glibc-extras
 
 ARG GLIBC_PREFIX=/usr/glibc
 
@@ -16,7 +16,7 @@ RUN   cp -dP /tmp/zlib/usr/lib/libz.so* "${GLIBC_PREFIX}/lib" \
   &&  cp -dP /tmp/gcc/usr/lib/libgcc* /tmp/gcc/usr/lib/libstdc++* "${GLIBC_PREFIX}/lib"
 
 # Final stage ensures the extra gcc and zlib binaries aren't included in the final image
-FROM alpine:3.18
+FROM alpine:3.24
 
 ARG GLIBC_PREFIX=/usr/glibc
 ARG LANG=en_US.UTF-8
@@ -34,7 +34,7 @@ RUN ln -s /lib /lib64 \
   &&   ${GLIBC_PREFIX}/sbin/ldconfig \
   &&   echo 'hosts: files mdns4_minimal [NOTFOUND=return] dns mdns4' > /etc/nsswitch.conf \
   &&   apk upgrade --update --no-cache libcrypto3 libssl3 \
-  &&   apk add --no-cache jattach --repository http://dl-cdn.alpinelinux.org/alpine/edge/community/ \
+  &&   apk add --no-cache jattach \
   &&   apk add --no-cache tini libstdc++
 
 # async-profiler, installed at /opt/async-profiler with asprof and jfrconv on the PATH.
