@@ -35,11 +35,34 @@ RUN ln -s /lib /lib64 \
   &&   echo 'hosts: files mdns4_minimal [NOTFOUND=return] dns mdns4' > /etc/nsswitch.conf \
   &&   apk upgrade --update --no-cache libcrypto3 libssl3 \
   &&   apk add --no-cache jattach --repository http://dl-cdn.alpinelinux.org/alpine/edge/community/ \
-  &&   apk add --no-cache tini libstdc++ \
-  &&   PLATFORM=$([ `uname -m` = "x86_64" ] && echo "x64" || echo "arm64") \
-  &&   ASYNC_PROFILER_URL="https://github.com/jvm-profiling-tools/async-profiler/releases/download/v2.8.3/async-profiler-2.8.3-linux-$PLATFORM.tar.gz" \
+  &&   apk add --no-cache tini libstdc++
+
+# async-profiler, installed at /opt/async-profiler with asprof and jfrconv on the PATH.
+# async-profiler publishes no checksums: when bumping the version, update both SHA-256 values
+# (`sha256sum async-profiler-<version>-linux-{x64,arm64}.tar.gz`) or the build fails.
+# renovate: datasource=github-releases depName=async-profiler/async-profiler
+ARG ASYNC_PROFILER_VERSION=4.5
+ARG ASYNC_PROFILER_SHA256_X64=89546fbb9ee0fc5496c7edd4099b0709489bc78b0d8057ccbb4b801f6b032b62
+ARG ASYNC_PROFILER_SHA256_ARM64=64c41d1465d60097439c50d7e924b4946f1f62b1cbd21ce5b034fad09c0d6979
+
+# async-profiler 3+ moved profiler.sh to bin/asprof and build/ to lib/. The symlinks keep the 2.x paths
+# (e.g. -agentpath:/opt/async-profiler/build/libasyncProfiler.so) working.
+RUN case `uname -m` in \
+       x86_64)  PLATFORM=x64   ASYNC_PROFILER_SHA256=$ASYNC_PROFILER_SHA256_X64 ;; \
+       aarch64) PLATFORM=arm64 ASYNC_PROFILER_SHA256=$ASYNC_PROFILER_SHA256_ARM64 ;; \
+       *)       echo "Unsupported architecture: `uname -m`" && exit 1 ;; \
+     esac \
+  &&   ASYNC_PROFILER_URL="https://github.com/async-profiler/async-profiler/releases/download/v${ASYNC_PROFILER_VERSION}/async-profiler-${ASYNC_PROFILER_VERSION}-linux-${PLATFORM}.tar.gz" \
   &&   echo "Downloading $ASYNC_PROFILER_URL" \
-  &&   apk add --no-cache curl && curl $ASYNC_PROFILER_URL -o /tmp/async-profiler.tgz -L -s  && apk del curl \
-  &&   tar xf /tmp/async-profiler.tgz -C /opt \
+  &&   apk add --no-cache --virtual .fetch-deps curl \
+  &&   curl -fsSL "$ASYNC_PROFILER_URL" -o /tmp/async-profiler.tgz \
+  &&   apk del .fetch-deps \
+  &&   echo "${ASYNC_PROFILER_SHA256}  /tmp/async-profiler.tgz" | sha256sum -c - \
+  &&   mkdir -p /opt/async-profiler \
+  &&   tar xzf /tmp/async-profiler.tgz -C /opt/async-profiler --strip-components=1 \
   &&   rm /tmp/async-profiler.tgz \
-  &&   mv opt/async-profiler* /opt/async-profiler
+  &&   ln -s bin/asprof /opt/async-profiler/profiler.sh \
+  &&   ln -s lib /opt/async-profiler/build \
+  &&   ln -s /opt/async-profiler/bin/asprof /usr/local/bin/asprof \
+  &&   ln -s /opt/async-profiler/bin/jfrconv /usr/local/bin/jfrconv \
+  &&   asprof --version

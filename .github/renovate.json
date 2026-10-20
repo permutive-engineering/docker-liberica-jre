@@ -7,7 +7,27 @@
         "patch"
       ],
       "automerge": true
+    },
+    {
+      "description": "async-profiler bumps need the per-architecture SHA-256 values in docker/liberica-base/Dockerfile updated by hand",
+      "matchDepNames": [
+        "async-profiler/async-profiler"
+      ],
+      "automerge": false
     }
   ],
-  "commitMessageExtra": "from {{{currentVersion}}} to {{{newVersion}}}"
+  "commitMessageExtra": "from {{{currentVersion}}} to {{{newVersion}}}",
+  "customManagers": [
+    {
+      "customType": "regex",
+      "description": "async-profiler version in the base image",
+      "managerFilePatterns": [
+        "/^docker/liberica-base/Dockerfile$/"
+      ],
+      "matchStrings": [
+        "# renovate: datasource=(?<datasource>\\S+) depName=(?<depName>\\S+)[^\\n]*\\nARG ASYNC_PROFILER_VERSION=(?<currentValue>\\S+)"
+      ],
+      "extractVersionTemplate": "^v(?<version>.+)$"
+    }
+  ]
 }
