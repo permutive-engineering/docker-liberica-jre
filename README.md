@@ -29,6 +29,18 @@ In addition to the major versions, builds of each JDK (shipped as a JRE) are mai
 For all available image versions see the
 [Github Packages listing for this repo](https://github.com/permutive-engineering/docker-liberica-jre/pkgs/container/permutive-jre-liberica/versions).
 
+## Profiling
+
+Every image ships [async-profiler](https://github.com/async-profiler/async-profiler) in `/opt/async-profiler`, with
+`asprof` and `jfrconv` on the `PATH`, for profiling a running JVM in a pod:
+
+```
+kubectl exec <pod> -- sh -c 'asprof -d 30 -e cpu -f /tmp/cpu.html $(pgrep java)'
+```
+
+The version is set in `docker/liberica-base/Dockerfile`. The 2.x paths (`/opt/async-profiler/profiler.sh` and
+`/opt/async-profiler/build/libasyncProfiler.so`) are kept as symlinks.
+
 ## Why Does Permutive Maintain their Own Java Images?
 
 For a number of interconnected reasons:
