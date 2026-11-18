@@ -47,6 +47,11 @@ RUN ln -s $LIBERICA_ROOT /usr/lib/jvm/jre \
 ENV JAVA_HOME=${LIBERICA_ROOT} \
 	PATH=${LIBERICA_ROOT}/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 
+# Java4Shell (CVE-2026-114938): disable the AVX-512 Base64 intrinsic until BellSoft ships a fixed build.
+# JDK_JAVA_OPTIONS rather than JAVA_TOOL_OPTIONS, because some deployments set JAVA_TOOL_OPTIONS and would override it.
+# https://calif.io/java4shell/
+ENV JDK_JAVA_OPTIONS=-XX:-UseBASE64Intrinsics
+
 # eMudhra CA compromise: BellSoft's interim mitigation (remove emSign ECC Root CA - G3 and AAA Certificate Services),
 # matched by SHA-256 fingerprint because the alias differs between Liberica builds. Fails the build if either remains.
 # https://bell-sw.com/blog/distrusting-compromised-emudhra-intermediates-in-java
