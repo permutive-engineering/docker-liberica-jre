@@ -55,6 +55,5 @@ docker buildx imagetools create -t ghcr.io/permutive-engineering/permutive-glibc
 
 ## Start using the new image
 
-To force a new build, update
-[the cache invalidator located at `.github/.cache_invalidator` in this repo](../.github/.cache_invalidator)
-with a new value.
+To force a new build, delete the build caches with `gh cache delete --all`, then run the
+[Build workflow](../.github/workflows/build.yaml) on `main` with `gh workflow run build.yaml --ref main`.
