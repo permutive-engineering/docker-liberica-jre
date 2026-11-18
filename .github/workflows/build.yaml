@@ -22,21 +22,17 @@ jobs:
         run: bash .github/cleanup.sh
 
       - name: Docker Build Cache
-        id: cache
         uses: actions/cache@v3
         with:
           path: /tmp/docker-builds
-          key: ${{ runner.os }}-${{ hashFiles('**/docker/build.sh') }}-${{ hashFiles('**/docker/liberica-base/Dockerfile') }}-${{ hashFiles('**/docker/liberica-jre/Dockerfile') }}-${{ hashFiles('**/.github/workflows/build.yaml') }}-${{ hashFiles('**/.github/.cache_invalidator') }}
+          key: ${{ runner.os }}-${{ hashFiles('**/docker/build.sh') }}-${{ hashFiles('**/docker/liberica-base/Dockerfile') }}-${{ hashFiles('**/docker/liberica-jre/Dockerfile') }}-${{ hashFiles('**/.github/workflows/build.yaml') }}-${{ github.run_id }}
+          restore-keys: ${{ runner.os }}-${{ hashFiles('**/docker/build.sh') }}-${{ hashFiles('**/docker/liberica-base/Dockerfile') }}-${{ hashFiles('**/docker/liberica-jre/Dockerfile') }}-${{ hashFiles('**/.github/workflows/build.yaml') }}-
 
       - name: Log into registry
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
       - name: Build docker images
         run: |
-          mkdir -p /tmp/docker-builds
-          mkdir .tmp
-          cp -r /tmp/docker-builds .tmp/docker-builds.pre
-
           if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
             echo "Building and pushing Docker images"
             docker/build.sh push
@@ -44,20 +40,3 @@ jobs:
             echo "Building Docker images"
             docker/build.sh
           fi
-
-          cp -r /tmp/docker-builds .tmp/docker-builds.post
-
-      - name: Update cache invalidator
-        if: ${{ hashFiles('**/.tmp/docker-builds.pre/*') != hashFiles('**/.tmp/docker-builds.post/*') && steps.cache.outputs.cache-hit == 'true'}}
-        run: |
-          dd if=/dev/urandom of=.github/.cache_invalidator bs=1K count=1
-
-          echo "[user]
-            name = GitHub Actions
-            email = ci@permutive.com" >> "${HOME}/.gitconfig"
-
-          git fetch origin
-          git checkout ${{ github.head_ref || github.ref_name }}
-          git add .github/.cache_invalidator
-          git commit -m "Update cache invalidator"
-          git push
